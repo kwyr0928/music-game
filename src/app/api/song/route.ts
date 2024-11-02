@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const id = searchParams.get("id");
 
   if (!id) {
-    return NextResponse.json({ error: "Invalid song ID" }, { status: 400 });
+    return NextResponse.json({ error: "IDが付与されていません" }, { status: 400 });
   }
 
   try {
@@ -16,10 +16,8 @@ export async function GET(request: Request) {
     });
 
     if (!song) {
-      return NextResponse.json({ error: "Song not found" }, { status: 404 });
+      return NextResponse.json({ error: "曲が見つかりません" }, { status: 404 });
     }
-
-    console.log("Fetched song:", song); // Debugging line to check song data
 
     return NextResponse.json(song);
   } catch (error) {

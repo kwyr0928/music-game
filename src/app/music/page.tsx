@@ -17,7 +17,7 @@ export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const songId = searchParams.get("id");
-  const [data, setData] = useState<string>("ド"); // Arduinoのserialportから取得
+  const [data, setData] = useState<string>("");
   const [notenum, setNotenum] = useState<number>(0);
   const [startTime, setStartTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -37,14 +37,14 @@ export default function Page() {
         console.log(songId);
         const response = await fetch(`/api/song?id=${songId}`);
         if (!response.ok) {
-          throw new Error("Failed to fetch song");
+          throw new Error("Error");
         }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const songData = await response.json();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         setSong(songData);
       } catch (error) {
-        console.error("Error fetching songs:", error);
+        console.error("Error:", error);
       }
     };
 
@@ -52,29 +52,29 @@ export default function Page() {
       void fetchSong();
     }
 
-    // const fetchData = async () => {
-    //   try {
-    //     const response = await fetch("/api/serial-data");
-    //     if (!response.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
-    //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    //     const result = await response.json();
-    //     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-    //     setData(result.data);
-    //   } catch (error) {
-    //     console.error("Error fetching serial data:", error);
-    //   }
-    // };
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/serial-data");
+        if (!response.ok) {
+          throw new Error("Error");
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const result = await response.json();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        setData(result.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
 
-    // // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    // const interval = setInterval(fetchData, 1000);
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    const interval = setInterval(fetchData, 1000);
 
-    // return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    if (song && data === song.note[notenum]) {
+    if (song?.note[notenum] && data.trim() == song?.note[notenum].trim()){
       if (notenum + 1 < song.note.length) {
         setNotenum((prevNotenum) => prevNotenum + 1);
       } else {
